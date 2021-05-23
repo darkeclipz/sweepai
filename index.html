@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap');
+        body {
+            margin: 0 auto;
+            max-width: 962px;
+            font-family: 'Roboto', sans-serif;
+        }
+        canvas {
+            border: 1px #999 solid;
+        }
+    </style>
+    <script src="minesweeper.js" type="text/javascript"></script>
+    <script src="sweepai.js" type="text/javascript"></script>
+</head>
+<body>
+    <div>
+        <h1>Minesweeper</h1>
+        <p>
+            This is JavaScript AI solver that can solve <b>deterministic</b> moves to complete a game of Minesweeper.
+            The game is formulated as a <b>constraint satisfaction problem (CSP)</b> which uses <b>coupled subsets</b> to dynamically create and solve <b>constraints</b>.
+        </p>
+        <h2>Game difficulty</h2>
+        <select id="difficulty">
+            <option selected value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="expert">Expert</option>
+        </select>
+        <p>
+            The <b id="difficulty-name">easy</b> difficulty has a board size of <b id="difficulty-board-size">10 x 12</b> with the probability of <b id="difficulty-probability">18%</b> that a cell is a mine.
+        </p>
+        <button onclick="restartGame()">Restart game</button>
+    </div>
+    <h2>Board</h2>
+    <div>
+        <canvas id="minesweeper"></canvas>
+        <p>
+            Click on a cell to reveal how many mines are around that cell. If there is a mine in the cell, you lose the game.
+            A cell can be marked by right clicking on the cell, and will be indicated with a <b>x</b>.
+        </p>
+    </div>
+    <h2>AI solver</h2>
+    <div>
+        <h3>Variables</h3>
+        <p>
+
+        </p>
+        <h3>Constraints</h3>
+        <p>
+
+        </p>
+        <h3>Controls</h3>
+        <button>Next cell</button>
+    </div>
+    <h2>Theory</h2>
+
+    <script type="text/javascript">
+        let minesweeper;
+        const restartGame = () => {
+            minesweeper = new Minesweeper("minesweeper", document.getElementById("difficulty").value);
+            
+            const difficultyName = document.getElementById("difficulty-name");
+            const difficultyBoardSize = document.getElementById("difficulty-board-size");
+            const difficultyProbability = document.getElementById("difficulty-probability");
+            difficultyName.innerHTML = minesweeper.difficulty;
+            difficultyBoardSize.innerHTML = minesweeper.width + ' x ' + minesweeper.height;
+            difficultyProbability.innerHTML = (100 * minesweeper.probability).toFixed(1) + '%';
+        };
+        restartGame();
+    </script>
+</body>
+</html>
