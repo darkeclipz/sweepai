@@ -54,12 +54,13 @@ class Board {
 
 class CanvasBoard {
 
-    // Cell size in pixel.
+    // Cell size in pixels.
     cellSize = 24;
 
     // Emoji's
     numbers = ["0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
     states = ["", "💣", "💥"];
+    flag = "🚩";
 
     constructor(canvasId) {
         this.canvas = document.getElementById(canvasId);
@@ -92,7 +93,7 @@ class CanvasBoard {
                 if(minesweeper.flagBoard.get(x, y) === FLAG
                    && !minesweeper.gameEnded
                    && minesweeper.playerBoard.get(x, y) === CLOSED) {
-                    this.ctx.fillText("🚩", x * this.cellSize, y * this.cellSize + 18);
+                    this.ctx.fillText(this.flag, x * this.cellSize, y * this.cellSize + 18);
                 }
 
                 // If the game ended, we reveal all the bombs.
@@ -187,28 +188,13 @@ class Minesweeper {
 
         // If the player click on a mine, it is game over!
         if(this.gameBoard.get(x, y) === MINE) {
-
-            this.gameEnded = true;
-
-            // Show which mine the player clicked on as an explosion.
-            this.gameBoard.set(x, y, EXPLODE);
-            
-            // Go through the entire board, and open all the remaining cells.
-            for(let y = 0; y < this.height; y++) {
-                for(let x = 0; x < this.width; x++) {
-                    if(this.gameBoard.get(x, y) !== MINE) {
-                        let count = this.gameBoard.count(x, y);
-                        this.playerBoard.set(x, y, count);
-                    }
-                }
-            }
+            this.gameOver(x, y);
 
             // Return the game over state.
             count = GAME_OVER;
         }
         else {
-
-            // The player click on an empty spot, count the mines around this cell and
+            // The player clicked on an empty spot, count the mines around this cell and
             // update the player board.
             count = this.gameBoard.count(x, y);
             this.playerBoard.set(x, y, count);
@@ -222,6 +208,23 @@ class Minesweeper {
 
         // Return how many mines there are around this cell, or -1 for game over.
         return count;
+    }
+
+    gameOver(x, y) {
+        this.gameEnded = true;
+
+        // Show which mine the player clicked on as an explosion.
+        this.gameBoard.set(x, y, EXPLODE);
+        
+        // Go through the entire board, and open all the remaining cells.
+        for(let y = 0; y < this.height; y++) {
+            for(let x = 0; x < this.width; x++) {
+                if(this.gameBoard.get(x, y) !== MINE) {
+                    let count = this.gameBoard.count(x, y);
+                    this.playerBoard.set(x, y, count);
+                }
+            }
+        }
     }
 
     flag(x, y) {

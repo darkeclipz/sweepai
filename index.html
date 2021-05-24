@@ -6,11 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minesweeper</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
         body {
             margin: 0 auto;
             max-width: 962px;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Open Sans', sans-serif;
         }
     </style>
     <script src="minesweeper.js" type="text/javascript"></script>
@@ -38,8 +38,8 @@
     <div>
         <canvas id="minesweeper"></canvas>
         <p>
-            Click on a cell to reveal how many mines are around that cell. If there is a mine in the cell, you lose the game.
-            A cell can be marked by right clicking on the cell, and will be indicated with a <b>x</b>.
+            Click on a cell to reveal how many mines (💣) are around that cell. If there is a mine in the cell, you lose the game (💥).
+            A cell can be marked by right clicking on the cell, and will be indicated with a 🚩.
         </p>
     </div>
     <h2>AI solver</h2>
@@ -62,15 +62,13 @@
         let sweepai;
         
         const onClick = (x, y) => {
-            console.log('click', x, y);
-            minesweeper.open(x, y);
-            sweepai.set(x, y);
+            if(minesweeper.open(x, y) !== GAME_OVER) {
+                sweepai.set(x, y);
+            }
         }
 
         const onRightClick = (x, y) => {
             minesweeper.flag(x, y);
-            console.log('contextmenu', x, y);
-            console.log(minesweeper);
         }
         
         const restartGame = () => {
@@ -87,6 +85,7 @@
             difficultyBoardSize.innerHTML = minesweeper.width + ' x ' + minesweeper.height;
             difficultyProbability.innerHTML = (100 * minesweeper.probability).toFixed(1) + '%';
         };
+
         restartGame();
     </script>
 </body>
