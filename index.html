@@ -66,10 +66,17 @@
             minesweeper.open(x, y);
             sweepai.set(x, y);
         }
+
+        const onRightClick = (x, y) => {
+            minesweeper.flag(x, y);
+            console.log('contextmenu', x, y);
+            console.log(minesweeper);
+        }
         
         const restartGame = () => {
             minesweeper = new Minesweeper("minesweeper", document.getElementById("difficulty").value);
             minesweeper.bindOnClick(onClick);
+            minesweeper.bindOnRightClick(onRightClick);
 
             sweepai = new SweepAi(minesweeper.width, minesweeper.height);
             

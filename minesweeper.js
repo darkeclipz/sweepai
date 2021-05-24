@@ -3,6 +3,7 @@ CLOSED = -1
 EMPTY = 0
 MINE = 1
 EXPLODE = 2
+FLAG = 1
 
 // The board is an MxN array of numbers, which is used to store
 // various information about the game.
@@ -64,6 +65,7 @@ class CanvasBoard {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext("2d");
         this.canvas.addEventListener("click", (e) => this.onClick(e));
+        this.canvas.addEventListener("contextmenu", (e) => this.onRightClick(e));
     }
 
     // Draw the game on the canvas.
@@ -75,21 +77,26 @@ class CanvasBoard {
 
                 this.ctx.fillStyle = "#dce2e8";
                 this.ctx.fillRect(x * this.cellSize + 1, y * this.cellSize + 1, this.cellSize - 2, this.cellSize - 2);
+                this.ctx.fillStyle = "black";
+                this.ctx.font = "18px Arial";
 
                 // If the cell is opened by the player, and there is no bomb there, we
                 // draw the number in the player board.
                 if(minesweeper.playerBoard.get(x, y) !== CLOSED 
                    && minesweeper.gameBoard.get(x,y) === EMPTY) {
-                    this.ctx.fillStyle = "black";
-                    this.ctx.font = "18px Arial";
                     let emoji = this.numbers[minesweeper.playerBoard.get(x, y)];
                     this.ctx.fillText(emoji, x * this.cellSize, y * this.cellSize + 18);
                 }
 
+                // If the cell is flagged, then we draw the flag.
+                if(minesweeper.flagBoard.get(x, y) === FLAG
+                   && !minesweeper.gameEnded
+                   && minesweeper.playerBoard.get(x, y) === CLOSED) {
+                    this.ctx.fillText("🚩", x * this.cellSize, y * this.cellSize + 18);
+                }
+
                 // If the game ended, we reveal all the bombs.
                 if(minesweeper.gameEnded) {
-                    this.ctx.fillStyle = "black";
-                    this.ctx.font = "18px Arial";
                     let state = minesweeper.gameBoard.get(x, y);
                     if(state) {
                         let emoji = this.states[state];
@@ -99,17 +106,34 @@ class CanvasBoard {
             }
     }
 
-    onClick(e) {
+    getCell(e) {
         // Calculate the cell (x, y) coordinate based on the mouse position.
         const canvasRect = this.canvas.getBoundingClientRect();
         const mouseX = e.clientX - canvasRect.left;
         const mouseY = e.clientY - canvasRect.top;
         const x = Math.floor(mouseX / this.cellSize);
         const y = Math.floor(mouseY / this.cellSize);
+        return [x, y];
+    }
+
+    onClick(e) {
+        let position = this.getCell(e);
+        let x = position[0];
+        let y = position[1];
         if(this.onClickCallback) {
             this.onClickCallback(x, y);
         }
-    }   
+    }
+
+    onRightClick(e) {
+        e.preventDefault();
+        let position = this.getCell(e);
+        let x = position[0];
+        let y = position[1];
+        if(this.onRightClickCallback) {
+            this.onRightClickCallback(x, y);
+        }
+    }
 }
 
 class Minesweeper {
@@ -122,8 +146,8 @@ class Minesweeper {
     }
 
     gameEnded = false;
-    numberOfMines;
-    openedCells;
+    numberOfMines = 0;
+    openedCells = 0;
 
     constructor(canvasId, difficulty) {
         this.difficulty = difficulty;
@@ -133,6 +157,7 @@ class Minesweeper {
         this.probability = settings[2];
         this.gameBoard = new Board(this.width, this.height, EMPTY);
         this.playerBoard = new Board(this.width, this.height, CLOSED);
+        this.flagBoard = new Board(this.width, this.height, EMPTY);
         this.canvasBoard = new CanvasBoard(canvasId);
         this.placeMines(this.probability);
         this.openedCells = 0;
@@ -198,6 +223,12 @@ class Minesweeper {
         // Return how many mines there are around this cell, or -1 for game over.
         return count;
     }
+
+    flag(x, y) {
+        let value = this.flagBoard.get(x, y);
+        this.flagBoard.set(x, y, value^1);
+        this.onChange();
+    }
     
     onChange() {
         this.canvasBoard.draw(this);
@@ -205,5 +236,9 @@ class Minesweeper {
 
     bindOnClick(f) {
         this.canvasBoard.onClickCallback = f;
+    }
+
+    bindOnRightClick(f) {
+        this.canvasBoard.onRightClickCallback = f;
     }
 }
