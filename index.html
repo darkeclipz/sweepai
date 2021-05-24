@@ -12,9 +12,6 @@
             max-width: 962px;
             font-family: 'Roboto', sans-serif;
         }
-        canvas {
-            border: 1px #999 solid;
-        }
     </style>
     <script src="minesweeper.js" type="text/javascript"></script>
     <script src="sweepai.js" type="text/javascript"></script>
@@ -62,8 +59,19 @@
 
     <script type="text/javascript">
         let minesweeper;
+        let sweepai;
+        
+        const onClick = (x, y) => {
+            console.log('click', x, y);
+            minesweeper.open(x, y);
+            sweepai.set(x, y);
+        }
+        
         const restartGame = () => {
             minesweeper = new Minesweeper("minesweeper", document.getElementById("difficulty").value);
+            minesweeper.bindOnClick(onClick);
+
+            sweepai = new SweepAi(minesweeper.width, minesweeper.height);
             
             const difficultyName = document.getElementById("difficulty-name");
             const difficultyBoardSize = document.getElementById("difficulty-board-size");
