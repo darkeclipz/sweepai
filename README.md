@@ -3,7 +3,7 @@ A deterministic Minesweeper AI.
 
 ## Demo
 
-Currently there is no demo available yet.
+[Click here for the demo.](https://darkeclipz.github.io/sweepai/) The AI has not yet been implemented, but the game is playable!
 
 ## API
 
